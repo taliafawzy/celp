@@ -1,0 +1,116 @@
+/*!
+ * Start Bootstrap - Shop Homepage (https://startbootstrap.com/template-overviews/shop-homepage)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-shop-homepage/blob/master/LICENSE)
+ */
+body {
+  padding-top: 56px;
+  font-family: -apple-system, 'Roboto';
+}
+
+a {
+    transition: 0.16s ease;
+}
+
+.card {
+    border-top: 20px solid #D32323;
+}
+
+.card-title a {
+    color: black;
+}
+
+.card-title a:hover {
+    color: #D32323;
+    text-decoration: none;
+}
+
+.card:hover > .card-title{
+    color: #D32323;
+    text-decoration: none;
+}
+
+.bg-dark {
+    background-color: #D32323!important;
+}
+
+nav {
+    height: 64px;
+}
+
+input {
+    width: 130px;
+    border: 0px;
+    border-radius: 6px;
+    padding-left: 10px;
+    height: 36px;
+    outline: none;
+    color: #ffffff;
+    background-color: #B31D1C;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+input:hover {
+    cursor: default;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+input[type=text]:focus, textarea:focus {
+    outline: none;
+}
+
+button {
+    width: auto;
+    padding: 10px 20px 10px 20px;
+    margin-left: 5px;
+    color: #BD201F;
+    border: 0px;
+    background-color: #ffffff;
+    border-radius: 40px;
+    height: 40px;
+    text-transform: capitalize;
+    font-size: 15px;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.navbar-brand {
+    font-size: 20px;
+}
+
+.navbar-brand:hover {
+    opacity: 0.7;
+}
+
+.product_container {
+  padding-top: 20px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  height: 100px;
+  width: 100px;
+  background-size: 100%, 100%;
+  background-image: none;
+}
+
+.carousel-control-next-icon:after
+{
+  content: '→';
+  font-size: 37px;
+  color: black;
+}
+
+.carousel-control-prev-icon:after {
+  content: '←';
+  font-size: 37px;
+  color: black;
+}
