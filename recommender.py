@@ -1,5 +1,6 @@
 import data
 from data import CITIES, BUSINESSES, USERS, REVIEWS, TIPS, CHECKINS
+from geopy import distance
 
 import random
 import pandas as pd
@@ -25,7 +26,7 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
             business = pd.DataFrame.from_dict(BUSINESSES[city])
             other_businesses.append(business)
         other_businesses = pd.concat(other_businesses, ignore_index=True)
-        print(other_businesses)
+        other_businesses = pd.concat([other_businesses.drop(['attributes'], axis=1), other_businesses['attributes'].apply(pd.Series)], axis=1)
         other_businesses_categories = extract_categories(other_businesses)
 
         " Makes pivot table of other businesses based on categories "
@@ -40,6 +41,25 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
 
         lijst = other_businesses[other_businesses.business_id.isin(look_a_likes.index)]
         print(lijst)
+        
+        """
+        Looks for latitude and longitude for each shop in the list
+        and calculates distance between chosen shop and shop in list.
+        Gives it a new column 'distance' in lijst.
+        """
+        distances = []
+        for shop in lijst.index:
+            lat = lijst.loc[shop]['latitude']
+            lon = lijst.loc[shop]['longitude']
+            
+            chosen_lat = other_businesses.loc[other_businesses['business_id']==business_id, 'latitude'].item()
+            chosen_lon = other_businesses.loc[other_businesses['business_id']==business_id,'longitude'].item()
+
+            distance = calculate_distance(lat, lon, chosen_lat, chosen_lon)
+            distances.append(distance)
+        lijst['distance'] = distances
+        print(lijst['distance'])
+    
     if not city:
         city = random.choice(CITIES)
     
@@ -83,10 +103,10 @@ def create_similarity_matrix_categories(matrix):
     m3 = np.minimum(m2, m2.T)
     return pd.DataFrame(m3, index = matrix.index, columns = matrix.index)
 
-#def calculate_distance(series, business):
- #   """ Calculate distance between chosen business and businesses that look a like """
-  #  lijst = []
-   # for item in series:
-    #    i = BUSINESSES['item']
-     #   print(i)
-        
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+
+    coords_1 = (lat1, lon1)
+    coords_2 = (lat2, lon2)
+
+    return distance.distance(coords_1, coords_2).km
