@@ -58,38 +58,42 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
             distance = calculate_distance(lat, lon, chosen_lat, chosen_lon)
             distances.append(distance)
         lijst['distance'] = distances
-        print(lijst['distance'])
-    
+        
+        """ Removes shops with distances bigger than 100 km and sorts dataframe based on distance. """
+        lijst = lijst[lijst['distance'] <= 100].sort_values('distance')
+
+        print(lijst)    
+        
     if not city:
         city = random.choice(CITIES)
     
     return random.sample(BUSINESSES[city], n)
 
 def extract_categories(businesses):
-    """Create an unfolded genre dataframe. Unpacks genres seprated by a '|' into seperate rows.
+    """Create an unfolded genre dataframe. Unpacks categories seprated by a ',' into seperate rows.
 
     Arguments:
-    movies -- a dataFrame containing at least the columns 'movieId' and 'genres' 
-              where genres are seprated by '|'
+    movies -- a dataFrame containing at least the columns 'business_id' and 'categories' 
+              where categories are seprated by ','
     """
     categories_m = businesses.apply(lambda row: pd.Series([row['business_id']] + row['categories'].lower().split(",")), axis=1)
-    stack_genres = categories_m.set_index(0).stack()
-    df_stack_genres = stack_genres.to_frame()
-    df_stack_genres['business_id'] = stack_genres.index.droplevel(1)
-    df_stack_genres.columns = ['categories', 'business_id']
-    return df_stack_genres.reset_index()[['business_id', 'categories']]
+    stack_categories = categories_m.set_index(0).stack()
+    df_stack_categories = stack_categories.to_frame()
+    df_stack_categories['business_id'] = stack_categories.index.droplevel(1)
+    df_stack_categories.columns = ['categories', 'business_id']
+    return df_stack_categories.reset_index()[['business_id', 'categories']]
 
 
 def pivot_categories(df):
-    """Create a one-hot encoded matrix for genres.
+    """Create a one-hot encoded matrix for categories.
     
     Arguments:
-    df -- a dataFrame containing at least the columns 'movieId' and 'genre'
+    df -- a dataFrame containing at least the columns 'business_id' and 'categories'
     
     Output:
     a matrix containing '0' or '1' in each cell.
-    1: the movie has the genre
-    0: the movie does not have the genre
+    1: the shop has the category
+    0: the shop does not have the category
     """
     return df.pivot_table(index = 'business_id', columns = 'categories', aggfunc = 'size', fill_value=0)
 
@@ -105,7 +109,10 @@ def create_similarity_matrix_categories(matrix):
 
 
 def calculate_distance(lat1, lon1, lat2, lon2):
-
+    """ 
+    Calculates distance between two given sets of latitude and longitude
+    according to geopy calculations.
+    """
     coords_1 = (lat1, lon1)
     coords_2 = (lat2, lon2)
 
