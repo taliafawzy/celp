@@ -21,7 +21,7 @@ def index():
     user_id = user["user_id"] if user else None
 
     # Get 10 recommendations
-    recommendations = recommender.recommend(user_id=user_id, n=10)
+    recommendations = recommender.recommend_home(user_id=user_id, n=10)
 
     # Render
     return render_template("index.html", recommendations=recommendations, user=session.get("user"))

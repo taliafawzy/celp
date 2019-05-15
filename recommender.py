@@ -6,6 +6,51 @@ import random
 import pandas as pd
 import numpy as np
 
+def recommend_home(user_id=None, n=10):
+    """
+    Returns n recommendations as a list of dicts.
+    Optionally takes in a user_id.
+    A recommendation is a dictionary in the form of:
+        {
+            business_id:str
+            stars:str
+            name:str
+            city:str
+            adress:str
+        }
+    """
+
+    if user_id is not None:
+        " Returns all reviews from a user "
+        reviews = []
+        for city in REVIEWS:
+            review = pd.DataFrame.from_dict(REVIEWS[city])
+            reviews.append(review)
+        reviews = pd.concat(reviews, ignore_index=True)
+        reviews = reviews[reviews['user_id'] == user_id]
+
+        " Returns all other businesses in given city in a dataframe "
+        other_businesses = []
+        for city in BUSINESSES:
+            business = pd.DataFrame.from_dict(BUSINESSES[city])
+            other_businesses.append(business)
+        other_businesses = pd.concat(other_businesses, ignore_index=True)
+        
+        bedrijven = pd.merge(reviews, other_businesses, on=['business_id'], how='inner')
+        city_counts = bedrijven['city'].value_counts()
+        print(bedrijven)
+        print(city_counts)
+    
+    else:
+        city = random.choice(CITIES)
+    
+    return random.sample(BUSINESSES[city], n)
+
+
+
+
+
+
 def recommend(user_id=None, business_id=None, city=None, n=10):
     """
     Returns n recommendations as a list of dicts.
@@ -57,12 +102,11 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
             distances.append(distance)
         lijst['distance'] = distances
         
-        """ Removes shops with distances bigger than 100 km and sorts dataframe based on distance. """
+        " Removes shops with distances bigger than 100 km and sorts dataframe based on distance. "
         lijst = lijst[lijst['distance'] <= 100].sort_values('distance')
-        print(len(lijst))
+        
+        " Makes list of dicts from dataframe so it can be returned. "
         lijst = lijst.T.to_dict().values()
-        print(lijst)    
-
         return lijst
 
     if not city:
