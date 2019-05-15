@@ -38,9 +38,13 @@ def recommend_home(user_id=None, n=10):
         
         bedrijven = pd.merge(reviews, other_businesses, on=['business_id'], how='inner')
         city_counts = bedrijven['city'].value_counts()
-        print(bedrijven)
-        print(city_counts)
-    
+        max_city = city_counts.idxmax().lower()
+        print(max_city)
+
+
+        highest_scored = sorted(BUSINESSES[max_city], key=lambda x: x['stars'], reverse=True)[:10]
+        return highest_scored
+        
     else:
         city = random.choice(CITIES)
     
