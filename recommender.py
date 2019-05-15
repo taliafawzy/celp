@@ -36,24 +36,63 @@ def recommend_home(user_id=None, n=10):
             other_businesses.append(business)
         other_businesses = pd.concat(other_businesses, ignore_index=True)
         
+        " Returns businesses that user reviewed and calculates which city appears most. "
         bedrijven = pd.merge(reviews, other_businesses, on=['business_id'], how='inner')
         city_counts = bedrijven['city'].value_counts()
         max_city = city_counts.idxmax().lower()
-        print(max_city)
-
-
+        
+        
         highest_scored = sorted(BUSINESSES[max_city], key=lambda x: x['stars'], reverse=True)[:10]
         return highest_scored
-        
+
     else:
         city = random.choice(CITIES)
     
     return random.sample(BUSINESSES[city], n)
 
+def recommend_carousel(user_id=None, n=10):
+    """
+    Returns n recommendations as a list of dicts.
+    Optionally takes in a user_id.
+    A recommendation is a dictionary in the form of:
+        {
+            business_id:str
+            stars:str
+            name:str
+            city:str
+            adress:str
+        }
+    """
 
+    if user_id is not None:
+        " Returns all reviews from a user "
+        reviews = []
+        for city in REVIEWS:
+            review = pd.DataFrame.from_dict(REVIEWS[city])
+            reviews.append(review)
+        reviews = pd.concat(reviews, ignore_index=True)
+        reviews = reviews[reviews['user_id'] == user_id]
 
+        " Returns all other businesses in given city in a dataframe "
+        other_businesses = []
+        for city in BUSINESSES:
+            business = pd.DataFrame.from_dict(BUSINESSES[city])
+            other_businesses.append(business)
+        other_businesses = pd.concat(other_businesses, ignore_index=True)
+        
+        " Returns businesses that user reviewed and calculates which city appears most. "
+        bedrijven = pd.merge(reviews, other_businesses, on=['business_id'], how='inner')
+        city_counts = bedrijven['city'].value_counts()
+        max_city = city_counts.idxmax().lower()
+        
+        
+        random_shops = random.sample(BUSINESSES[max_city], n)
+        return random_shops
 
-
+    else:
+        city = random.choice(CITIES)
+    
+    return random.sample(BUSINESSES[city], n)
 
 def recommend(user_id=None, business_id=None, city=None, n=10):
     """
