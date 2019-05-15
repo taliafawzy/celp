@@ -37,10 +37,8 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
 
         " Gives back a series of businesses that look most like the chosen business without business itself"
         look_a_likes = other_businesses_similarity[business_id].loc[(other_businesses_similarity[business_id] > 0.3)].drop(business_id)
-        print(look_a_likes)
 
         lijst = other_businesses[other_businesses.business_id.isin(look_a_likes.index)]
-        print(lijst)
         
         """
         Looks for latitude and longitude for each shop in the list
@@ -61,9 +59,12 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
         
         """ Removes shops with distances bigger than 100 km and sorts dataframe based on distance. """
         lijst = lijst[lijst['distance'] <= 100].sort_values('distance')
-
+        print(len(lijst))
+        lijst = lijst.T.to_dict().values()
         print(lijst)    
-        
+
+        return lijst
+
     if not city:
         city = random.choice(CITIES)
     
