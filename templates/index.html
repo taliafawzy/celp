@@ -38,11 +38,11 @@
             <div class="carousel-item {% if i == 0 %}active{% endif %}">
               <div class="col-lg-8 offset-md-2">
                 {% with card={
-                    'name':recommendations[i]["name"],
-                    'link':url_for('business', city=recommendations[i]['city'], id=recommendations[i]['business_id']),
+                    'name':carousel[i]["name"],
+                    'link':url_for('business', city=carousel[i]['city'], id=carousel[i]['business_id']),
                     'img':'http://placehold.it/700x200',
                     'text':'Description here',
-                    'stars':recommendations[i]["stars"]
+                    'stars':carousel[i]["stars"]
                 } %}
                   {% include 'card.html' %}
                 {% endwith %}
