@@ -50,7 +50,7 @@ def recommend_home(user_id=None, n=10):
     
     return random.sample(BUSINESSES[city], n)
 
-def recommend_carousel(user_id=None, n=10):
+def recommend_carousel(user_id=None, n=4):
     """
     Returns n recommendations as a list of dicts.
     Optionally takes in a user_id.
@@ -115,6 +115,7 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
             other_businesses.append(business)
         other_businesses = pd.concat(other_businesses, ignore_index=True)
         other_businesses = pd.concat([other_businesses.drop(['attributes'], axis=1), other_businesses['attributes'].apply(pd.Series)], axis=1)
+        other_businesses = other_businesses.dropna(subset = ['categories'])
         other_businesses_categories = extract_categories(other_businesses)
 
         " Makes pivot table of other businesses based on categories "

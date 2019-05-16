@@ -21,7 +21,7 @@ def index():
     user_id = user["user_id"] if user else None
 
     # Get 6 recommendations
-    recommendations = recommender.recommend_home(user_id=user_id, n=6)
+    recommendations = recommender.recommend_home(user_id=user_id, n=10)
 
     # Get 4 random recommendations in carousel
     carousel = recommender.recommend_carousel(user_id=user_id, n=4)
