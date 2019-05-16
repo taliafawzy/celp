@@ -6,6 +6,34 @@ import random
 import pandas as pd
 import numpy as np
 
+
+# TODO!!
+def maths():
+    """
+    Does some calculations for the recommender functions.
+    """
+    if user_id is not None:
+        " Returns all reviews from a user "
+        reviews = []
+        for city in REVIEWS:
+            review = pd.DataFrame.from_dict(REVIEWS[city])
+            reviews.append(review)
+        reviews = pd.concat(reviews, ignore_index=True)
+        reviews = reviews[reviews['user_id'] == user_id]
+
+        " Returns all other businesses in given city in a dataframe "
+        other_businesses = []
+        for city in BUSINESSES:
+            business = pd.DataFrame.from_dict(BUSINESSES[city])
+            other_businesses.append(business)
+        other_businesses = pd.concat(other_businesses, ignore_index=True)
+
+        " Returns businesses that user reviewed and calculates which city appears most. "
+        bedrijven = pd.merge(reviews, other_businesses, on=['business_id'], how='inner')
+        city_counts = bedrijven['city'].value_counts()
+        max_city = city_counts.idxmax().lower()
+
+
 def recommend_home(user_id=None, n=10):
     """
     Returns n recommendations as a list of dicts.
@@ -35,19 +63,19 @@ def recommend_home(user_id=None, n=10):
             business = pd.DataFrame.from_dict(BUSINESSES[city])
             other_businesses.append(business)
         other_businesses = pd.concat(other_businesses, ignore_index=True)
-        
+
         " Returns businesses that user reviewed and calculates which city appears most. "
         bedrijven = pd.merge(reviews, other_businesses, on=['business_id'], how='inner')
         city_counts = bedrijven['city'].value_counts()
         max_city = city_counts.idxmax().lower()
-        
-        
+
+
         highest_scored = sorted(BUSINESSES[max_city], key=lambda x: x['stars'], reverse=True)[:10]
         return highest_scored
 
     else:
         city = random.choice(CITIES)
-    
+
     return random.sample(BUSINESSES[city], n)
 
 def recommend_carousel(user_id=None, n=4):
@@ -79,20 +107,21 @@ def recommend_carousel(user_id=None, n=4):
             business = pd.DataFrame.from_dict(BUSINESSES[city])
             other_businesses.append(business)
         other_businesses = pd.concat(other_businesses, ignore_index=True)
-        
+
         " Returns businesses that user reviewed and calculates which city appears most. "
         bedrijven = pd.merge(reviews, other_businesses, on=['business_id'], how='inner')
         city_counts = bedrijven['city'].value_counts()
         max_city = city_counts.idxmax().lower()
-        
-        
+
+
         random_shops = random.sample(BUSINESSES[max_city], n)
         return random_shops
 
     else:
         city = random.choice(CITIES)
-    
+
     return random.sample(BUSINESSES[city], n)
+
 
 def recommend(user_id=None, business_id=None, city=None, n=10):
     """
@@ -128,7 +157,7 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
         look_a_likes = other_businesses_similarity[business_id].loc[(other_businesses_similarity[business_id] > 0.3)].drop(business_id)
 
         lijst = other_businesses[other_businesses.business_id.isin(look_a_likes.index)]
-        
+
         """
         Looks for latitude and longitude for each shop in the list
         and calculates distance between chosen shop and shop in list.
@@ -138,31 +167,32 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
         for shop in lijst.index:
             lat = lijst.loc[shop]['latitude']
             lon = lijst.loc[shop]['longitude']
-            
+
             chosen_lat = other_businesses.loc[other_businesses['business_id']==business_id, 'latitude'].item()
             chosen_lon = other_businesses.loc[other_businesses['business_id']==business_id,'longitude'].item()
 
             distance = calculate_distance(lat, lon, chosen_lat, chosen_lon)
             distances.append(distance)
         lijst['distance'] = distances
-        
+
         " Removes shops with distances bigger than 100 km and sorts dataframe based on distance. "
         lijst = lijst[lijst['distance'] <= 100].sort_values('distance')
-        
+
         " Makes list of dicts from dataframe so it can be returned. "
         lijst = lijst.T.to_dict().values()
         return lijst
 
     if not city:
         city = random.choice(CITIES)
-    
+
     return random.sample(BUSINESSES[city], n)
+
 
 def extract_categories(businesses):
     """Create an unfolded genre dataframe. Unpacks categories seprated by a ',' into seperate rows.
 
     Arguments:
-    movies -- a dataFrame containing at least the columns 'business_id' and 'categories' 
+    movies -- a dataFrame containing at least the columns 'business_id' and 'categories'
               where categories are seprated by ','
     """
     categories_m = businesses.apply(lambda row: pd.Series([row['business_id']] + row['categories'].lower().split(",")), axis=1)
@@ -175,10 +205,10 @@ def extract_categories(businesses):
 
 def pivot_categories(df):
     """Create a one-hot encoded matrix for categories.
-    
+
     Arguments:
     df -- a dataFrame containing at least the columns 'business_id' and 'categories'
-    
+
     Output:
     a matrix containing '0' or '1' in each cell.
     1: the shop has the category
@@ -198,7 +228,7 @@ def create_similarity_matrix_categories(matrix):
 
 
 def calculate_distance(lat1, lon1, lat2, lon2):
-    """ 
+    """
     Calculates distance between two given sets of latitude and longitude
     according to geopy calculations.
     """

@@ -26,8 +26,8 @@ def index():
     # Get 4 random recommendations in carousel
     carousel = recommender.recommend_carousel(user_id=user_id, n=4)
 
-    # Render
-    return render_template("index.html", recommendations=recommendations, carousel = carousel, user=session.get("user"))
+    # Render index
+    return render_template("index.html", recommendations=recommendations, carousel=carousel, user=session.get("user"))
 
 
 @app.route("/login", methods=["POST"])
